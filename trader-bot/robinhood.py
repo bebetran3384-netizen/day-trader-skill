@@ -196,6 +196,10 @@ def load_snapshot(path):
     for part in snap.get("historicals") or []:
         for k, v in norm_bars(part).items():
             bars.setdefault(k, []).extend(v)
+    for k, rows in (snap.get("bars") or {}).items():   # compact: [begins_at, o, h, l, c, v]
+        bars.setdefault(k.upper(), []).extend(
+            {"begins_at": r[0], "open_price": r[1], "high_price": r[2], "low_price": r[3], "close_price": r[4],
+             "volume": r[5]} for r in rows)
     quotes = {}
     for part in snap.get("quotes") if isinstance(snap.get("quotes"), list) else [snap.get("quotes") or {}]:
         quotes.update(norm_quotes(part))
@@ -208,6 +212,31 @@ def load_snapshot(path):
 
 
 # ---------------------------------------------------------------- the pass
+
+def merge_cache(snap, path, day):
+    """Today's bars: the cache plus the snapshot's, the snapshot winning on the same begins_at."""
+    cache = {}
+    try:
+        with open(path, encoding="utf-8") as fh:
+            doc = json.load(fh)
+        if doc.get("date") == day:
+            cache = doc.get("bars") or {}
+    except (OSError, ValueError):
+        pass
+    for sym, rows in snap["bars"].items():
+        by = {b["begins_at"]: b for b in cache.get(sym, [])}
+        for b in rows:
+            by[b["begins_at"]] = b
+        cache[sym] = [by[k] for k in sorted(by)]
+    d = os.path.dirname(path)
+    if d:
+        os.makedirs(d, exist_ok=True)
+    with open(path + ".tmp", "w", encoding="utf-8") as fh:
+        json.dump({"date": day, "bars": cache}, fh)
+    os.replace(path + ".tmp", path)
+    snap["bars"] = cache
+    return snap
+
 
 def limits(cfg_bot, total_value):
     c = dict(RH_DEFAULTS)
@@ -454,6 +483,7 @@ def main(argv=None):
     p.add_argument("--snapshot", default="trader/rh/snapshot.json")
     p.add_argument("--config", default="trader/config.json")
     p.add_argument("--kill", default="trader/STOP")
+    p.add_argument("--cache", default="trader/rh/bars.json", help="today's bars so far; a pass may send only new ones")
     p.add_argument("--now", help="pin the clock, New York time (default: the snapshot's now, else the real clock)")
     a = ap.parse_args(argv)
     if a.cmd != "pass":
@@ -468,6 +498,7 @@ def main(argv=None):
             now = bot.parse_iso(snap["now"])
         else:
             now = entry.utc_now()
+        merge_cache(snap, a.cache, entry.to_eastern(now).date().isoformat())
         out = decide(snap, cfg_bot, now, kill=os.path.exists(a.kill))
     except (RHError, bot.BotError, entry.EntryError, exitp.PlanError, size.SizeError, risk.RiskError) as e:
         print(json.dumps({"error": str(e), "actions": []}))

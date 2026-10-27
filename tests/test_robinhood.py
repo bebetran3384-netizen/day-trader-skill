@@ -192,6 +192,35 @@ class DayLimits(Base):
         self.assertEqual([x["action"] for x in out["actions"]], ["buy"])
 
 
+class Cache(Base):
+    def test_a_pass_can_send_only_the_new_bars(self):
+        bars = rh_bars()
+        full = snap()
+        cut = [b for b in bars if b["begins_at"] < iso(ny("10:10"))]
+        rest = [[b["begins_at"], b["open_price"], b["high_price"], b["low_price"], b["close_price"], b["volume"]]
+                for b in bars if b["begins_at"] >= iso(ny("10:10"))]
+        cache = os.path.join(self.tmp, "bars.json")
+        first = dict(full, historicals=[{"data": {"results": [{"symbol": "TSLA", "bars": cut}]}}])
+        second = dict(full, historicals=[], bars={"TSLA": rest})
+        for i, s in enumerate((first, second)):
+            path = os.path.join(self.tmp, "s%d.json" % i)
+            with open(path, "w") as fh:
+                json.dump(s, fh)
+            loaded = rh.merge_cache(rh.load_snapshot(path), cache, DAY)
+        out = rh.decide(loaded, {}, ny("10:16"))
+        self.assertEqual([x["action"] for x in out["actions"]], ["buy"])
+
+    def test_yesterdays_cache_is_dropped(self):
+        cache = os.path.join(self.tmp, "bars.json")
+        with open(cache, "w") as fh:
+            json.dump({"date": "2026-10-16", "bars": {"OLD": [{"begins_at": "x"}]}}, fh)
+        path = os.path.join(self.tmp, "s.json")
+        with open(path, "w") as fh:
+            json.dump(snap(), fh)
+        loaded = rh.merge_cache(rh.load_snapshot(path), cache, DAY)
+        self.assertEqual(list(loaded["bars"]), ["TSLA"])
+
+
 class Parsing(unittest.TestCase):
     def test_stop_orders_are_read_from_type_and_trigger(self):
         o = rh.norm_orders({"data": {"orders": [order("ERIC", "sell", "market", "cancelled", 46, stop=10.47,

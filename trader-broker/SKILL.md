@@ -19,9 +19,11 @@ argument-hint: "[order number]"
 
 # trader-broker
 
-The Order Executor is the only skill in this pack that can lead to a real
-order, so it is the strictest. An order reaches the market only after three
-separate gates, every time, for every order:
+The Order Executor is the hands-on way to a real order, so it is the
+strictest. (The other way is `/trader-bot`, which the user starts on purpose
+and which trades on its own under the same rules.) Through this skill an
+order reaches the market only after three separate gates, every time, for
+every order:
 
 1. **trader-risk passed this exact order today** (matched by fingerprint).
 2. **The user typed an explicit yes for this one order** in the chat.
@@ -204,9 +206,10 @@ buttons: Allow once, Deny. Allow once sends it to the paper account. The
 
 - Education and tooling, not financial advice. A PASS is a rules check, not a recommendation.
 - Paper trading by default (`"paper": true`). Going live is the user's own decision, in their own config.
-- Nothing in this pack places an order except trader-broker, and only when all three hold: trader-risk
+- Nothing in this pack places an order except trader-broker and trader-bot. trader-broker only when all three hold: trader-risk
   passed that exact order today, the user typed an explicit yes for that one order in the chat, and the
   user clicked Allow once on Claude's own card because the order tool is set to "Needs approval"
-  (Customize > Connectors > tool permissions). Never set an order tool to "Always allow".
+  (Customize > Connectors > tool permissions). Never set an order tool to "Always allow". trader-bot only
+  once the user starts it themselves, on paper unless they armed live in all three places (see trader-bot).
 - No options, margin, short selling or leverage unless the config allows it and the user confirms.
 - Broker keys live in environment variables or the Claude Desktop config, never in the chat.

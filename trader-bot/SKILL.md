@@ -160,6 +160,46 @@ touches both legs, the bar's open on a gap through the stop). DIR holds
 `<TICKER>.json` 5-minute Yahoo charts. A replay is a simulation with perfect
 fills, not a promise.
 
+## Robinhood mode
+
+Robinhood has no API a program can call for stocks: it is reachable only
+through Claude's Robinhood connector. So in this mode Claude is the loop and
+`robinhood.py` is the brain. Every 5 minutes, just after a bar closes:
+
+1. Claude reads the account with the connector (`get_portfolio`,
+   `get_equity_positions`, today's `get_equity_orders` with
+   `agent_initiated: true`, 5-minute `get_equity_historicals` and
+   `get_equity_quotes` for the watchlist) and writes the raw results to
+   `trader/rh/snapshot.json`, plus `"watch"` (the day's list) and `"now"`.
+2. `python3 "${CLAUDE_SKILL_DIR}/robinhood.py" pass --snapshot trader/rh/snapshot.json`
+   prints this pass's actions: `buy` (a limit at the ask), `sell` (a
+   `stop_market` stop, or `market` at the target, the flatten or a halt) and
+   `cancel`.
+3. Claude carries out exactly those actions, in order: `review_equity_order`
+   then `place_equity_order` with the action's `ref_id`, or
+   `cancel_equity_order`. If a review returns any `order_checks` alert
+   (buying power, pattern day trader, a halt), Claude places nothing and
+   tells the user. Claude never places an order the pass did not return.
+
+It keeps no state of its own: entries, fills and losses are read back from
+the account's orders on every pass, so a restarted session carries on. It
+only ever sells symbols it bought that day.
+
+Robinhood has no paper account and no bracket orders: every order is real
+money, the stop is a separate stop order placed once the buy fills, and the
+target is a market sell when a pass sees the price there. Limits, in a
+`"robinhood"` block of `trader/config.json` (these are the defaults):
+`max_loss_pct_per_trade` 1 (% of the account value), `max_trades_per_day` 4,
+`max_losing_trades` 2, `max_trigger_age_min` 6, `max_chase_pct` 0.5,
+`flat_by` 15:55. The watchlist is the day's scan: Robinhood's scanner
+(`preview_scan`) for stocks $5 to $150, volume over 2 million and relative
+volume over 1.5.
+
+Claude starts Robinhood mode only when the user asks for it in so many
+words, on the one account the connector lets it trade, and says plainly
+before the first pass that orders will execute with real money and no
+further yes.
+
 ## The fine print it repeats
 
 - A stop is a plan, not a guarantee: a gap or a halt can fill past it.

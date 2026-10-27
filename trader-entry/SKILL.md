@@ -136,9 +136,10 @@ watch: nobody is there to say yes.
 
 - Education and tooling, not financial advice. A PASS is a rules check, not a recommendation.
 - Paper trading by default (`"paper": true`). Going live is the user's own decision, in their own config.
-- Nothing in this pack places an order except trader-broker, and only when all three hold: trader-risk
+- Nothing in this pack places an order except trader-broker and trader-bot. trader-broker only when all three hold: trader-risk
   passed that exact order today, the user typed an explicit yes for that one order in the chat, and the
   user clicked Allow once on Claude's own card because the order tool is set to "Needs approval"
-  (Customize > Connectors > tool permissions). Never set an order tool to "Always allow".
+  (Customize > Connectors > tool permissions). Never set an order tool to "Always allow". trader-bot only
+  once the user starts it themselves, on paper unless they armed live in all three places (see trader-bot).
 - No options, margin, short selling or leverage unless the config allows it and the user confirms.
 - Broker keys live in environment variables or the Claude Desktop config, never in the chat.

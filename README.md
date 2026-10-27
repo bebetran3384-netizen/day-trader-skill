@@ -1,6 +1,6 @@
 # The Day Trader skill
 
-11 Claude skills for day trading: scan thousands of charts, track breaking news, time every entry and exit, and replay every outcome before you risk a dollar.
+12 Claude skills for day trading: scan thousands of charts, track breaking news, time every entry and exit, replay every outcome before you risk a dollar, and let a bot trade it for you.
 
 Free, MIT, no signup, no API key. The tools are plain Python that read free
 public data: Yahoo Finance charts, Nasdaq Trader's symbol lists, SEC EDGAR
@@ -13,8 +13,10 @@ craziest one is the Time Machine: before you risk a dollar, it replays the
 rest of the session 10,000 times from the stock's own recent bars, plus every
 past day the same setup fired, and tells you the honest odds.
 
-And no trade goes through until you say yes. Nothing in this pack can place
-an order on its own. Paper trading is the default.
+And no trade goes through until you say yes. The one exception is the bot,
+which you start on purpose: it runs the whole chain by itself, places its own
+bracket orders and flattens by 3:55 PM. It trades paper unless you arm live
+money in three separate places. Paper trading is the default everywhere.
 
 > **Looking for the original Trader skill?** Copy an investor's 13F, the
 > stock screener, tax lots and rebalancing live in
@@ -57,7 +59,7 @@ The tools need Python 3.8 or newer. Nothing to pip install. The SEC tools
 email in `trader/config.json` (`"sec_user_agent": "Your Name you@example.com"`)
 or in the `SEC_USER_AGENT` environment variable.
 
-## The eleven
+## The twelve
 
 | command | job | what it does |
 | --- | --- | --- |
@@ -72,6 +74,7 @@ or in the `SEC_USER_AGENT` environment variable.
 | `/trader-alerts` | Price Alerts | Rings when a price, a stop or the opening bell hits. |
 | `/trader-analyst` | Earnings Analyst | Reads earnings reports and sums up what changed. |
 | `/trader-pelosi` | Pelosi Tracker | Reads Congress's stock-trade disclosures the minute they are filed. |
+| `/trader-bot` | Trading Bot | Runs the opening-range breakout end to end on its own: entry, stop, target, size, risk check, bracket order, flat by the close. Paper by default. |
 
 ## How to use it
 
@@ -82,6 +85,7 @@ what the last one wrote:
 scanner -> news -> entry -> exit -> timemachine -> budget -> risk -> broker   (one trade)
 alerts: stop, target, flat by the close                                       (while it is open)
 news / analyst / pelosi                                                        (on a schedule)
+bot: scanner's rule -> exit -> budget -> risk -> Alpaca, by itself             (all day, once you start it)
 ```
 
 An example, the trade in the reel: Tesla, Monday October 19 2026, real data.
@@ -141,6 +145,10 @@ python3 trader-alerts/alerts.py add --from-plan                        # stop, t
 python3 trader-alerts/alerts.py check                                  # rings what hit, once
 python3 trader-analyst/facts.py TSLA                                   # quarters, growth, EPS
 python3 trader-pelosi/ptr.py index --member pelosi                     # her PTRs this year
+python3 trader-bot/bot.py replay --offline charts --day 2026-10-19     # the bot on a past day, simulated
+python3 trader-bot/bot.py run --dry-run                                # today, simulated fills
+python3 trader-bot/bot.py run                                          # today, Alpaca paper account
+python3 trader-bot/bot.py stop                                         # kill switch
 ```
 
 ```bash
@@ -159,12 +167,20 @@ arithmetic. It does not know your situation and it cannot see the future.
 Most people who day trade lose money. You can lose money. Decide for
 yourself, and talk to a licensed professional if you need advice.
 
-**No trade goes through until you say yes.** Only `/trader-broker` can lead to
-an order, and only after `/trader-risk` passes that exact order and you type
+**No trade goes through until you say yes, unless you start the bot.**
+`/trader-broker` leads to an order only after `/trader-risk` passes that exact order and you type
 yes for it in the chat. Set your brokerage tool to "Needs approval" in Claude
 (Customize, Connectors, tool permissions), never "Always allow", so Claude's
 own "Allow once / Deny" card is a second check. No options, margin, short
 selling or leverage unless you turn them on.
+
+**The bot trades without asking.** `/trader-bot` places orders on its own
+once you start it, under the same `/trader-risk` rules, one bracket order per
+trade with a stop. Real money needs `"paper": false` in your config, `--live`
+on the command line and `TRADER_BOT_LIVE=real-money` in the environment, all
+three. It has a kill switch (`trader/STOP`), halts and flattens at your daily
+loss limit, and only ever closes the positions it opened. Replay it and run
+it on paper first, for weeks. A bot can lose money faster than you can.
 
 **Paper first.** `"paper": true` is the default in `config.example.json`, and
 Alpaca's MCP server defaults to its paper account. Keys live in environment
@@ -210,6 +226,7 @@ trader-broker/      SKILL.md, ticket.py, claude_desktop_config.example.json
 trader-alerts/      SKILL.md, alerts.py, alerts.example.json
 trader-analyst/     SKILL.md, facts.py, metrics.example.json
 trader-pelosi/      SKILL.md, ptr.py
+trader-bot/         SKILL.md, bot.py
 tests/              unittest suite + offline fixtures
 ```
 

@@ -46,13 +46,21 @@ def order(sym, side, typ, state, qty, filled=0, avg=None, stop=None, price=None,
             "price": None if price is None else "%.6f" % price, "created_at": iso(ny(at)), "executions": []}
 
 
-def snap(value=663.75, positions=(), orders=(), last=364.18, ask=None, watch=("TSLA",), now=None):
-    return {"portfolio": {"data": {"total_value": "%.2f" % value, "cash": "%.2f" % value,
+def spy_bars(chg):
+    """SPY's day so far, opening at 600 and drifting to chg % by 10:10."""
+    t0 = ny("09:30")
+    return [[iso(t0 + datetime.timedelta(minutes=5 * i)), 600.0, 600.5, 599.5, 600.0 * (1 + chg / 100.0 * i / 8), 1000]
+            for i in range(9)]
+
+
+def snap(value=663.75, positions=(), orders=(), last=364.18, ask=None, watch=("TSLA",), now=None, spy=0.3):
+    return {"bars": {} if spy is None else {"SPY": spy_bars(spy)},"portfolio": {"data": {"total_value": "%.2f" % value, "cash": "%.2f" % value,
                                    "buying_power": {"buying_power": "%.4f" % value}}},
             "positions": {"data": {"positions": [{"symbol": s, "quantity": "%.6f" % q} for s, q in positions]}},
             "orders": {"data": {"orders": list(orders)}},
             "historicals": [{"data": {"results": [{"symbol": "TSLA", "interval": "5minute", "bars": rh_bars()}]}}],
-            "quotes": [{"data": {"results": [quote("TSLA", last, ask)]}}],
+            "quotes": [{"data": {"results": [quote("TSLA", last, ask)] +
+                                 ([] if spy is None else [quote("SPY", 600.0 * (1 + spy / 100.0))])}}],
             "watch": list(watch)}
 
 
@@ -107,6 +115,33 @@ class Entry(Base):
         out = self.go(snap(positions=[("TSLA", 2)]), "10:16")
         self.assertEqual(out["actions"], [])
         self.assertEqual(out["status"]["watch"][0]["status"], "already held (not the bot's)")
+
+
+class MarketFilter(Base):
+    """Backtested on 51 symbols x 60 days: longs only while SPY is over its open, entries by 11:30."""
+
+    def test_no_long_entry_while_spy_is_under_its_open(self):
+        out = self.go(snap(spy=-0.2), "10:16")
+        self.assertEqual(out["actions"], [])
+        self.assertIn("SPY", out["status"]["reason"])
+        self.assertEqual(out["status"]["market"]["change_pct"], -0.2)
+
+    def test_no_spy_data_means_no_entry(self):
+        out = self.go(snap(spy=None), "10:16")
+        self.assertEqual(out["actions"], [])
+        self.assertIn("cannot be checked", out["status"]["reason"])
+
+    def test_the_filter_can_be_turned_off(self):
+        out = self.go(snap(spy=None), "10:16", cfg={"market_filter": None})
+        self.assertEqual([a["action"] for a in out["actions"]], ["buy"])
+
+    def test_spy_under_its_open_still_protects_a_position(self):
+        buy = order("TSLA", "buy", "limit", "filled", 1, 1, 364.19, price=364.19, at="10:16")
+        out = self.go(snap(positions=[("TSLA", 1)], orders=[buy], spy=-0.5), "10:17")
+        self.assertEqual([(a["action"], a["type"]) for a in out["actions"]], [("sell", "stop_market")])
+
+    def test_no_entries_after_1130(self):
+        self.assertEqual(rh.RH_DEFAULTS["no_entries_after"], "11:30")
 
 
 class Holding(Base):
@@ -218,7 +253,7 @@ class Cache(Base):
         with open(path, "w") as fh:
             json.dump(snap(), fh)
         loaded = rh.merge_cache(rh.load_snapshot(path), cache, DAY)
-        self.assertEqual(list(loaded["bars"]), ["TSLA"])
+        self.assertEqual(sorted(loaded["bars"]), ["SPY", "TSLA"])
 
 
 class Parsing(unittest.TestCase):

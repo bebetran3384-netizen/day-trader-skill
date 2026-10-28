@@ -68,7 +68,9 @@ RH_DEFAULTS = {
     "stop": "or-mid",
     "target": "1R",
     "no_entries_before": "09:45",
-    "no_entries_after": "15:30",
+    "no_entries_after": "11:30",
+    "market_filter": "SPY",
+    "market_min_pct": 0.0,
     "flat_by": "15:55",
     "cash_buffer_pct": 10,
     "max_position_pct": 75,
@@ -400,6 +402,24 @@ def decide(snap, cfg_bot, now_utc, kill=False):
     if stop_why:
         return {"actions": acts, "status": dict(status, state="holding" if open_bot else "no-entries", reason=stop_why),
                 "done": False}
+
+    mkt = c.get("market_filter")
+    if mkt:
+        mkt = str(mkt).upper()
+        bars = (charts.get(mkt) or {}).get("bars") or []
+        today_bars = [b for b in bars if entry.to_eastern(entry.utc_of(b["t"])).date() == day]
+        last = (quotes.get(mkt) or {}).get("last") or (today_bars[-1]["c"] if today_bars else None)
+        if not today_bars or not last or not today_bars[0]["o"]:
+            return {"actions": acts, "status": dict(status, state="no-entries",
+                                                    reason="no %s bars or quote: the market filter cannot be checked" % mkt),
+                    "done": False}
+        chg = 100.0 * (last / today_bars[0]["o"] - 1)
+        status["market"] = {"symbol": mkt, "open": today_bars[0]["o"], "last": last, "change_pct": round(chg, 2)}
+        if chg <= float(c["market_min_pct"]):
+            return {"actions": acts, "status": dict(status, state="no-entries",
+                                                    reason="%s is %+.2f%% from its open: no long entries (market_filter)"
+                                                           % (mkt, chg)),
+                    "done": False}
 
     watched = []
     for sym in snap["watch"]:

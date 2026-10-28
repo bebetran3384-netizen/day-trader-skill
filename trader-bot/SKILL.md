@@ -191,7 +191,17 @@ target is a market sell when a pass sees the price there. Limits, in a
 `"robinhood"` block of `trader/config.json` (these are the defaults):
 `max_loss_pct_per_trade` 1 (% of the account value), `max_trades_per_day` 4,
 `max_losing_trades` 2, `max_trigger_age_min` 6, `max_chase_pct` 0.5,
-`flat_by` 15:55. The watchlist is the day's scan: Robinhood's scanner
+`no_entries_after` 11:30, `market_filter` "SPY", `market_min_pct` 0,
+`flat_by` 15:55. With the market filter on, a pass enters only while SPY's
+last price is over its 9:30 open, so Claude also reads SPY's 5-minute bars
+and quote each pass; without them it enters nothing (`"market_filter": null`
+turns it off). Why: on 51 stocks over 60 days (Aug to Oct 2026, 1,561
+breakouts) the plain breakout lost about 0.09R a trade after a 0.03 %
+spread each way, in both halves of the window. Trading only while SPY was
+up and only until 11:30 cut that to about -0.02R, again in both halves:
+it loses less, it does not show an edge. Nothing tried (a 30-minute range,
+the range-low stop, 1.5R, 2R or hold-to-close targets, volume, VWAP, gap
+and price filters) was positive in both halves. The watchlist is the day's scan: Robinhood's scanner
 (`preview_scan`) for stocks $5 to $150, volume over 2 million and relative
 volume over 1.5.
 

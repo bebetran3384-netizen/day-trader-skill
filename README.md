@@ -1,6 +1,6 @@
 # The Day Trader skill
 
-12 Claude skills for day trading: scan thousands of charts, track breaking news, time every entry and exit, replay every outcome before you risk a dollar, and let a bot trade it for you.
+13 Claude skills for day trading: scan thousands of charts, track breaking news, time every entry and exit, replay every outcome before you risk a dollar, let a bot trade it for you, and learn how it all works.
 
 Free, MIT, no signup, no API key. The tools are plain Python that read free
 public data: Yahoo Finance charts, Nasdaq Trader's symbol lists, SEC EDGAR
@@ -59,7 +59,7 @@ The tools need Python 3.8 or newer. Nothing to pip install. The SEC tools
 email in `trader/config.json` (`"sec_user_agent": "Your Name you@example.com"`)
 or in the `SEC_USER_AGENT` environment variable.
 
-## The twelve
+## The thirteen
 
 | command | job | what it does |
 | --- | --- | --- |
@@ -74,7 +74,8 @@ or in the `SEC_USER_AGENT` environment variable.
 | `/trader-alerts` | Price Alerts | Rings when a price, a stop or the opening bell hits. |
 | `/trader-analyst` | Earnings Analyst | Reads earnings reports and sums up what changed. |
 | `/trader-pelosi` | Pelosi Tracker | Reads Congress's stock-trade disclosures the minute they are filed. |
-| `/trader-bot` | Trading Bot | Runs the opening-range breakout end to end on its own: entry, stop, target, size, risk check, bracket order, flat by the close. Paper by default. |
+| `/trader-bot` | Trading Bot | Runs the opening-range breakout end to end on its own: entry, stop, target, size, risk check, bracket order, flat by the close. Paper by default. Learns from its trades and a 60-day backtest, and changes a setting only when it holds up walk-forward. |
+| `/trader-lessons` | Lessons | Six learning modules with real-chart examples and graded quizzes: the breakout, R, sizing, stops and gaps, reading a backtest, why most day traders lose. |
 
 ## How to use it
 
@@ -226,7 +227,8 @@ trader-broker/      SKILL.md, ticket.py, claude_desktop_config.example.json
 trader-alerts/      SKILL.md, alerts.py, alerts.example.json
 trader-analyst/     SKILL.md, facts.py, metrics.example.json
 trader-pelosi/      SKILL.md, ptr.py
-trader-bot/         SKILL.md, bot.py
+trader-bot/         SKILL.md, bot.py, robinhood.py, learn.py
+trader-lessons/     SKILL.md, lessons.py, modules/
 tests/              unittest suite + offline fixtures
 ```
 

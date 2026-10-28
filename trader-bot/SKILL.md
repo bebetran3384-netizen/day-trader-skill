@@ -210,6 +210,45 @@ words, on the one account the connector lets it trade, and says plainly
 before the first pass that orders will execute with real money and no
 further yes.
 
+## The learner
+
+`learn.py` is how the bot learns, from the market and from its own trades,
+without ever loosening your risk limits:
+
+```bash
+python3 "${CLAUDE_SKILL_DIR}/learn.py" fetch --watch watch.txt --out trader/learn/data   # 60 days of 5m bars + SPY
+python3 "${CLAUDE_SKILL_DIR}/learn.py" study --data trader/learn/data --account 660 --write
+python3 "${CLAUDE_SKILL_DIR}/learn.py" journal --snapshot trader/rh/snapshot.json         # after the close
+python3 "${CLAUDE_SKILL_DIR}/learn.py" review                                             # live vs the backtest
+python3 "${CLAUDE_SKILL_DIR}/learn.py" apply                                              # only when asked
+```
+
+- **study** replays 72 candidate settings (15 or 30 minute range, midpoint
+  or low stop, 1R / 1.5R / 2R, entries to 11:30 or 15:30, no market filter,
+  SPY over its open, or by 0.2 %) bar by bar on every saved chart, scored in
+  R after a 0.03 % spread each way, on 4 blocks of days. A change is
+  proposed only if it beats the current setting in 3 of 4 blocks by 0.03R
+  and if **walk-forward** picking (the best setting on the earlier blocks
+  only, scored on the next) beats the current setting on most blocks. It
+  says "edge" only when the mean is over 0 in 3 of 4 blocks and more than 2
+  standard errors over 0. `--account` skips trades the account could not
+  size.
+- **journal** reads the day's closed round trips from the Robinhood orders
+  (entry, exit, stop, P&L, R, stopped or sold) into
+  `trader/learn/journal.jsonl`, once each.
+- **review** holds the journal against the study's expected R. After 20
+  trades, live more than 2 standard errors under the backtest means the
+  fills, timing or picks differ from the replay: stop and look.
+- **apply** copies `trader/learn/proposal.json` into the `"robinhood"` block
+  of `trader/config.json` (a `.bak` first). It may change `or_minutes`,
+  `stop`, `target`, `no_entries_after`, `market_filter` and
+  `market_min_pct`, never the max loss, the trade counts or flat by.
+
+Claude runs `apply` only when the user asks for that change in so many
+words, after showing the study's verdict, the walk-forward lines and the
+trade count. A proposal that "beats" the current setting while the verdict
+says "No edge" is a smaller expected loss, and Claude says so.
+
 ## The fine print it repeats
 
 - A stop is a plan, not a guarantee: a gap or a halt can fill past it.

@@ -1,0 +1,369 @@
+{
+  "version": 1,
+  "lessons": [
+    {
+      "id": 1,
+      "slug": "odds",
+      "title": "What day trading is, and the honest odds",
+      "minutes": 8,
+      "points": [
+        "A day trade opens and closes the same session. Nothing is held overnight, so an earnings report after the close cannot gap through your stop.",
+        "Most people who day trade lose money. Costs (spread, slippage, fees) are paid on every trade, win or lose, so a strategy has to beat them just to break even.",
+        "This pack never predicts. It reads charts, news and filings, does arithmetic, and checks your rules. You decide, and you own every order.",
+        "Paper trading is practice money on real prices. Stay on paper until weeks of results say the method holds up, and never trade money you cannot afford to lose."
+      ],
+      "example": "On Wed Oct 28 2026 the daily scan matched 453 of 1,548 liquid charts. That is a list of charts that matched a rule, not 453 things to buy.",
+      "try": [
+        "Ask: \"is the market open\" (/trader-alerts knows NYSE hours, holidays and early closes)."
+      ],
+      "quiz": [
+        {
+          "q": "Why does a day trade avoid the risk of an overnight earnings gap?",
+          "choices": ["The broker cancels earnings gaps", "It is closed before the session ends", "Stops always fill at their price", "Earnings never move a stock"],
+          "answer": "b",
+          "why": "Flat by the close means no position is open when the report lands."
+        },
+        {
+          "q": "A scan finds 453 charts that match a setup. What are they?",
+          "choices": ["453 trades to take", "Stocks the scanner predicts will rise", "Charts that matched a rule, to look at next", "A ranked list of the best stocks"],
+          "answer": "c",
+          "why": "A setup is a pattern on a chart, not a prediction. You pick one to research, never all of them."
+        },
+        {
+          "q": "When is it reasonable to think about switching from paper to real money?",
+          "choices": ["After one winning day", "After weeks of paper results you have reviewed", "As soon as the bot is set up", "When a headline looks exciting"],
+          "answer": "b",
+          "why": "One day proves nothing. A real sample of paper trades, reviewed honestly, is the minimum."
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "slug": "bars",
+      "title": "Candles, volume and the opening range",
+      "minutes": 10,
+      "points": [
+        "A bar (candle) has four prices for its time slot: open, high, low, close. A 5-minute bar from 9:30 covers 9:30 to 9:35 and is only complete at 9:35.",
+        "Volume is how many shares traded in the bar. A move on heavy volume has more participants behind it than one on thin volume.",
+        "The opening range is the high and low of the first 15 minutes (the 9:30, 9:35 and 9:40 bars). The first minutes are the noisiest of the day; the range lets the dust settle.",
+        "Never act on a bar that is still forming. Its close can change until the bar ends."
+      ],
+      "example": "TSLA, Mon Oct 19 2026: the 9:30 to 9:40 bars made a range high of 362.18 and a low of 354.47. At 10:12 the 10:10 bar was still forming, so the entry timer said waiting.",
+      "try": [
+        "After 9:50 AM ET ask: \"did TSLA break its opening range?\" (/trader-entry)."
+      ],
+      "quiz": [
+        {
+          "q": "A 5-minute bar starts at 10:10. When is it complete?",
+          "choices": ["10:10", "10:11", "10:15", "At the close"],
+          "answer": "c",
+          "why": "A bar counts only once its full 5 minutes are over: start plus 5 minutes."
+        },
+        {
+          "q": "With a 15-minute opening range, which bars make the range?",
+          "choices": ["9:30, 9:35, 9:40", "9:45, 9:50, 9:55", "Only 9:30", "The last three bars of yesterday"],
+          "answer": "a",
+          "why": "Three 5-minute bars cover 9:30 to 9:45."
+        },
+        {
+          "q": "Why wait for the opening range instead of buying at 9:31?",
+          "choices": ["Orders are not allowed before 9:45", "The first minutes are the noisiest and give no level to trade against", "Prices are cheaper after 9:45", "The range guarantees a breakout"],
+          "answer": "b",
+          "why": "The range gives you a level (its high) and a place for a stop (its midpoint or low)."
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "slug": "setups",
+      "title": "Setups: what the scanner looks for",
+      "minutes": 10,
+      "points": [
+        "20-day closing-high breakout: the last close is above every close of the 20 sessions before it.",
+        "Bull flag: a strong run (over 10 % in 10 sessions) followed by 5 quiet closes inside a 5 % range.",
+        "Reclaim of the 20-day average: yesterday closed under its 20-day average, today closed above it.",
+        "Oversold: RSI 14 under 30. Oversold bounce: RSI was under 30 yesterday and today closed up. Oversold can stay oversold.",
+        "Opening-range breakout (ORB): during the session, the first completed 5-minute bar that CLOSES above the opening-range high."
+      ],
+      "example": "Oct 28 2026: ORCL tagged 'reclaimed the 20-day average' after one 11 % day on its investor day. LPLA tagged 'oversold' after one 15 % drop on earnings. Same tags, very different stories: that is why news comes next.",
+      "try": [
+        "Before the open ask: \"find me setups\" (/trader-scanner daily). After 9:50 AM: \"opening range breakouts\" (/trader-scanner orb)."
+      ],
+      "quiz": [
+        {
+          "q": "What makes a chart an opening-range breakout in this pack?",
+          "choices": ["Any tick above the range high", "A completed 5-minute bar that closes above the range high", "The open above yesterday's close", "Volume twice the average"],
+          "answer": "b",
+          "why": "A close, not a touch. Wicks above the high that close back inside do not count."
+        },
+        {
+          "q": "RSI 14 under 30 means the chart is...",
+          "choices": ["Certain to bounce", "Oversold by that rule, which can last", "A buy signal", "Overbought"],
+          "answer": "b",
+          "why": "Oversold describes the recent past. A falling stock can stay oversold for weeks."
+        },
+        {
+          "q": "Two stocks carry the same setup tag. What should you do before trading either?",
+          "choices": ["Buy both", "Buy the cheaper one", "Read what moved each one", "Nothing, the tag is enough"],
+          "answer": "c",
+          "why": "ORCL and LPLA show a tag can come from very different news. /trader-news is the next step."
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "slug": "news",
+      "title": "News and catalysts",
+      "minutes": 8,
+      "points": [
+        "Headlines are leads, not facts. Read the story or the filing before believing it.",
+        "Filings beat headlines. An 8-K is what the company told the SEC. Item 2.02 is earnings results, 5.02 an officer change, 1.03 bankruptcy, 4.02 past financials no longer reliable.",
+        "An earnings date inside your holding period is a gap risk: the price can jump past your stop at the next open.",
+        "A big move with no headline is worth noticing too. Somebody knows something, or it is noise; either way the risk is higher."
+      ],
+      "example": "Thu Oct 29 2026 pre-market: HWM was up 3.4 % after its earnings 8-K (revenue $2.70B vs $2.59B expected). CVX and XOM report Fri Oct 30 before the open, so a CVX trade held overnight would carry that gap risk.",
+      "try": [
+        "Ask: \"any news on ORCL\" or \"morning briefing\" (/trader-news)."
+      ],
+      "quiz": [
+        {
+          "q": "A headline and the company's 8-K disagree. Which do you trust?",
+          "choices": ["The headline, it is newer", "The 8-K", "Whichever is more bullish", "Neither, flip a coin"],
+          "answer": "b",
+          "why": "The 8-K is the company's own filing with the SEC."
+        },
+        {
+          "q": "A company reports earnings tomorrow before the open. Your plan is a day trade, flat by 3:55 PM today. Is the report a gap risk to this trade?",
+          "choices": ["Yes, always", "No, the trade is closed before the report", "Only if the stop is tight", "Only on Fridays"],
+          "answer": "b",
+          "why": "Flat by the close keeps the trade out of tomorrow's opening gap."
+        },
+        {
+          "q": "An 8-K lists Item 4.02. What does that flag?",
+          "choices": ["A dividend", "Earnings results", "Past financial statements should no longer be relied on", "A new product"],
+          "answer": "c",
+          "why": "4.02 is a non-reliance notice, a serious risk flag."
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "slug": "entry",
+      "title": "Timing the entry, and not chasing",
+      "minutes": 7,
+      "points": [
+        "The entry is the first completed bar that closes above the level. The entry timer says waiting, triggered, expired or not open yet.",
+        "No new entries before 9:45 AM or after your cutoff (15:30 by default). Late breakouts have less time to work before the close.",
+        "Do not chase. If the price is already well above the trigger, the stop is further away and the reward smaller. The bot skips triggers older than 6 minutes or more than 0.5 % above the trigger.",
+        "Long side only in this pack: it buys breakouts, it never sells short."
+      ],
+      "example": "TSLA, Oct 19 2026: waiting at 10:12; triggered at 10:15 when the 10:10 bar closed at 364.18, 0.55 % over the 362.18 range high.",
+      "try": [
+        "After 9:50 AM ET ask: \"watch SOFI for an entry\" (/trader-entry)."
+      ],
+      "quiz": [
+        {
+          "q": "The trigger fired 45 minutes ago and the price has run 3 % higher. What does the bot's rule do?",
+          "choices": ["Buy double", "Skip it: too late to chase", "Buy at the trigger price", "Short it"],
+          "answer": "b",
+          "why": "An old trigger with a big run means a worse entry, a farther stop and a smaller target."
+        },
+        {
+          "q": "It is 3:40 PM and a chart just broke out. With the default cutoff, what happens?",
+          "choices": ["Entry allowed", "No new entry: the setup has expired", "Entry at half size", "Entry held overnight"],
+          "answer": "b",
+          "why": "no_entries_after is 15:30 by default. Late entries have little time before flat by 15:55."
+        },
+        {
+          "q": "Why wait for the bar to close instead of buying the first tick above the high?",
+          "choices": ["Ticks are not real", "A bar that pokes above can still close back inside the range", "Brokers forbid it", "It is always cheaper"],
+          "answer": "b",
+          "why": "Waiting for the close filters out many false breaks, at the cost of a slightly later price."
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "slug": "exit",
+      "title": "Stops, targets and R",
+      "minutes": 10,
+      "points": [
+        "Set the stop and target BEFORE you enter, so nothing is decided in a fast move.",
+        "The stop is where the setup has failed. The default is the opening-range midpoint, rounded down to the cent.",
+        "R is your risk per share: entry minus stop. A 1R target is entry plus one R; 2R is entry plus two.",
+        "Reward to risk is (target minus entry) divided by (entry minus stop). A 1R target is 1:1.",
+        "A stop is a plan, not a guarantee. A gap or a halt can fill past it."
+      ],
+      "example": "TSLA: range 354.47 to 362.18, midpoint 358.325, stop 358.32. Entry 364.18, so R = 5.86. 1R target = 370.04. Your own ENPH paper trade on Oct 29: entry about 25.24, stop 24.70, R = 0.54, target 25.78.",
+      "try": [
+        "After an entry triggers ask: \"set my stop and target\" (/trader-exit)."
+      ],
+      "quiz": [
+        {
+          "q": "Entry 50.00, stop 49.00. Where is the 2R target?",
+          "choices": ["51.00", "52.00", "50.50", "48.00"],
+          "answer": "b",
+          "why": "R = 1.00, so 2R = 50.00 + 2.00 = 52.00."
+        },
+        {
+          "q": "Entry 25.24, stop 24.70, target 25.78. What is the reward to risk?",
+          "choices": ["1:1", "2:1", "1:2", "3:1"],
+          "answer": "a",
+          "why": "Reward 0.54, risk 0.54: one to one, a 1R target."
+        },
+        {
+          "q": "Your stop is 24.70. The stock gaps down and opens at 24.10. Where can the stop fill?",
+          "choices": ["Exactly 24.70", "Near 24.10, past the stop", "It cannot fill", "At the entry price"],
+          "answer": "b",
+          "why": "A stop becomes a market order once hit; across a gap it fills near the next available price."
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "slug": "sizing",
+      "title": "Position sizing: shares from your max loss",
+      "minutes": 10,
+      "points": [
+        "Size comes from risk, not from how much you like the chart. Shares = max loss per trade divided by R, rounded DOWN to whole shares.",
+        "Then the other limits: position cap, max order, cash after your buffer. The smallest one decides.",
+        "A stop too far away for your max loss is a refusal, not a smaller stop. Never move the stop to fit the size.",
+        "A common rule of thumb is to risk about 1 % of the account per trade."
+      ],
+      "example": "Reel: $50 max loss / 5.86 = 8.53, so 8 TSLA shares ($2,913.44); loss at the stop $46.88. Yours: $10 max loss / 0.54 = 18.5, so 18 ENPH shares, about $454, loss at the stop $9.72.",
+      "try": [
+        "After a plan is set ask: \"how many shares\" (/trader-budget). Ask \"set my rules\" to change your limits."
+      ],
+      "quiz": [
+        {
+          "q": "Max loss $10, entry 40.00, stop 39.20. How many whole shares?",
+          "choices": ["12", "13", "25", "10"],
+          "answer": "a",
+          "why": "R = 0.80. 10 / 0.80 = 12.5, rounded down to 12. The loss at the stop is $9.60."
+        },
+        {
+          "q": "Your max loss is $10 but the stop is $15 a share away. What does the Budget Manager do?",
+          "choices": ["Buy 1 share anyway", "Refuse the trade", "Move the stop closer", "Buy a fraction"],
+          "answer": "b",
+          "why": "Even one share risks $15, over the $10 limit, so the trade is refused. Moving the stop would break the plan."
+        },
+        {
+          "q": "With a $1,000 budget, about what is a 1 % risk per trade?",
+          "choices": ["$1", "$10", "$100", "$1,000"],
+          "answer": "b",
+          "why": "1 % of $1,000 is $10, the max loss you chose."
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "slug": "risk",
+      "title": "Daily limits: the rules that keep you in the game",
+      "minutes": 8,
+      "points": [
+        "Daily loss limit: once the day's losses (and open risk) reach it, no new trades until tomorrow. It stops one bad day becoming a disaster.",
+        "Trades per day: a cap stops revenge trading after a loss.",
+        "Entry window and flat by: no entries before 9:45 or after 15:30, everything closed by 15:55.",
+        "Getting out is never blocked. The limits only stop new risk.",
+        "The pattern day trader rule: if your broker still applies it, margin accounts under $25,000 are limited in day trades over 5 business days. pdt_guard counts them."
+      ],
+      "example": "Your replay of Oct 28: after GMAB and BAC, a WULF trade was BLOCKED: $12.14 already at risk plus $9.99 = $22.13, over your $20 daily limit.",
+      "try": [
+        "Ask: \"how much have I risked today\" or \"check my order\" (/trader-risk)."
+      ],
+      "quiz": [
+        {
+          "q": "Daily limit $20. You have $12.14 at risk. A new trade risks $9.99. What happens?",
+          "choices": ["PASS", "BLOCK: $22.13 is over $20", "PASS at half size", "The limit resets"],
+          "answer": "b",
+          "why": "12.14 + 9.99 = 22.13, over the $20 daily loss limit."
+        },
+        {
+          "q": "You hit your daily loss limit while holding a position. Can you still sell it?",
+          "choices": ["No, everything is locked", "Yes, getting out is never blocked", "Only tomorrow", "Only at the target"],
+          "answer": "b",
+          "why": "Limits stop new risk. Closing reduces risk, so it is always allowed."
+        },
+        {
+          "q": "What is a daily trade cap mainly protecting you from?",
+          "choices": ["Broker fees only", "Revenge trading after losses", "Missing breakouts", "Taxes"],
+          "answer": "b",
+          "why": "After a loss the urge to win it back fast is strong. A hard cap ends the day."
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "slug": "odds-math",
+      "title": "Odds, expectancy and why one day proves nothing",
+      "minutes": 12,
+      "points": [
+        "Expectancy in R: win rate times average win in R, minus loss rate times 1R. Above zero (after costs) is the only kind of edge.",
+        "Break-even win rate: with a 1R target you need over 50 % winners; with 2R, over 33.3 %, before costs.",
+        "The Time Machine replays the rest of the session 10,000 times from the stock's own recent bars, and re-runs the rule on every past day it fired. It is a reality check, not a promise.",
+        "Small samples lie. 5 trades can be all wins by luck. Judge a method on dozens of trades, not a day."
+      ],
+      "example": "TSLA, Oct 19: target first 29.4 %, stop first 25.5 %, open at the close 45.1 %. On 33 real past firings: 13 targets, 15 stops, 5 neither. Verdict: close to a coin flip. Your Oct 28 replay made +$6.54 on 2 trades: far too few to mean anything.",
+      "try": [
+        "After a plan is set ask: \"run the time machine\" (/trader-timemachine). Ask \"replay the bot on yesterday\" (/trader-bot)."
+      ],
+      "quiz": [
+        {
+          "q": "1R target, 55 % winners, 45 % losers, no costs. Expectancy per trade?",
+          "choices": ["+0.10R", "+0.55R", "-0.10R", "0R"],
+          "answer": "a",
+          "why": "0.55 x 1 - 0.45 x 1 = +0.10R."
+        },
+        {
+          "q": "With a 2R target, roughly what win rate breaks even before costs?",
+          "choices": ["50 %", "33 %", "66 %", "20 %"],
+          "answer": "b",
+          "why": "p x 2 = (1 - p) x 1 gives p = 1/3."
+        },
+        {
+          "q": "The bot made money on its first day on paper. What does that tell you?",
+          "choices": ["It works, go live", "Very little: one day is too small a sample", "It will lose tomorrow", "Double the size"],
+          "answer": "b",
+          "why": "Luck dominates small samples. Keep it on paper and collect weeks of results."
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "slug": "orders",
+      "title": "Orders, brokers, the bot and keeping keys safe",
+      "minutes": 12,
+      "points": [
+        "Market order: fills now at the best price available. Limit: only at your price or better. Stop: becomes a market order once the stop price trades.",
+        "A bracket order is one entry with a stop-loss and a take-profit attached; when one leg fills, the other is cancelled.",
+        "/trader-broker places nothing without three yeses: risk passed that exact order, you typed yes in the chat, and you clicked Allow once on Claude's card.",
+        "The bot is the exception you switch on: it places its own bracket orders under your limits. Real money needs three separate switches. Its kill switch: say \"stop the bot\".",
+        "API keys are passwords. Never paste them into a chat. Put them only in your environment settings, and regenerate any key that was ever exposed."
+      ],
+      "example": "Oct 29 2026, your paper bot: ECHO bracket (buy 5, stop 93.55, take-profit 97.01) hit its target and the stop leg was cancelled. ENPH bracket: buy 18, stop 24.70, take-profit 25.78.",
+      "try": [
+        "Ask: \"is the bot running\" or \"bot status\" (/trader-bot). Ask \"set up paper trading\" (/trader-broker)."
+      ],
+      "quiz": [
+        {
+          "q": "In a bracket order, the take-profit fills. What happens to the stop-loss leg?",
+          "choices": ["It stays open forever", "It is cancelled", "It turns into a buy", "It doubles"],
+          "answer": "b",
+          "why": "The legs are one-cancels-other: the position is closed, so the stop is no longer needed."
+        },
+        {
+          "q": "Where should your Alpaca secret key go?",
+          "choices": ["Into the chat so Claude can use it", "Into a screenshot", "Only into the environment settings", "Into the config file in your project"],
+          "answer": "c",
+          "why": "Anything typed in a chat is stored in the history. Keys belong in environment variables only."
+        },
+        {
+          "q": "What does the bot need before it trades real money?",
+          "choices": ["Nothing, it is live by default", "paper false in the config, --live on the command line and TRADER_BOT_LIVE=real-money, all three", "A winning day on paper", "Just your yes in chat"],
+          "answer": "b",
+          "why": "Any two without the third is an error, never a fallback. Paper is the default everywhere."
+        }
+      ]
+    }
+  ]
+}

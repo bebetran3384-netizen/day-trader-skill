@@ -1,6 +1,6 @@
 # The Day Trader skill
 
-12 Claude skills for day trading: scan thousands of charts, track breaking news, time every entry and exit, replay every outcome before you risk a dollar, and let a bot trade it for you.
+13 Claude skills for day trading: scan thousands of charts, track breaking news, time every entry and exit, replay every outcome before you risk a dollar, let a bot trade it for you, and learn the method one lesson at a time.
 
 Free, MIT, no signup, no API key. The tools are plain Python that read free
 public data: Yahoo Finance charts, Nasdaq Trader's symbol lists, SEC EDGAR
@@ -59,7 +59,7 @@ The tools need Python 3.8 or newer. Nothing to pip install. The SEC tools
 email in `trader/config.json` (`"sec_user_agent": "Your Name you@example.com"`)
 or in the `SEC_USER_AGENT` environment variable.
 
-## The twelve
+## The thirteen
 
 | command | job | what it does |
 | --- | --- | --- |
@@ -75,6 +75,7 @@ or in the `SEC_USER_AGENT` environment variable.
 | `/trader-analyst` | Earnings Analyst | Reads earnings reports and sums up what changed. |
 | `/trader-pelosi` | Pelosi Tracker | Reads Congress's stock-trade disclosures the minute they are filed. |
 | `/trader-bot` | Trading Bot | Runs the opening-range breakout end to end on its own: entry, stop, target, size, risk check, bracket order, flat by the close. Paper by default. |
+| `/trader-learn` | Learning Modules | Teaches the method in ten short lessons, from the honest odds to stops, sizing, daily limits and keeping keys safe, each with a real example, one thing to try and a graded quiz. |
 
 ## How to use it
 
@@ -149,6 +150,8 @@ python3 trader-bot/bot.py replay --offline charts --day 2026-10-19     # the bot
 python3 trader-bot/bot.py run --dry-run                                # today, simulated fills
 python3 trader-bot/bot.py run                                          # today, Alpaca paper account
 python3 trader-bot/bot.py stop                                         # kill switch
+python3 trader-learn/learn.py next                                     # the next lesson
+python3 trader-learn/learn.py answer 6 bab                             # graded quiz, with reasons
 ```
 
 ```bash
